@@ -2,7 +2,7 @@
 
 **Status:** aceito
 
-**Contexto:** O PI entregou o preditor e uma API com quatro rotas em dois arquivos, sem banco e sem login. Neste semestre o sistema precisa de autenticação, cadastro de casos, lista priorizada e indicadores, e a continuação no TCC já prevê os módulos de carteira de pacientes e de análise territorial. A equipe tem cinco pessoas no mesmo repositório, nenhuma infraestrutura de operação além do próprio computador, e o volume esperado é o de um município, com algumas centenas de notificações por mês.
+**Contexto:** O PI entregou o preditor e uma API com quatro rotas em dois arquivos, sem banco e sem login. Neste semestre o sistema precisa de autenticação, cadastro de casos, lista priorizada e indicadores, e a continuação no TCC já prevê os módulos de carteira de pacientes e de análise territorial. A equipe tem quatro pessoas no mesmo repositório, nenhuma infraestrutura de operação além do próprio computador, e o volume esperado é o de um município, com algumas centenas de notificações por mês.
 
 **Decisão:** Construir o sistema como uma única aplicação FastAPI dividida nos módulos `acesso`, `casos` e `risco`, cada um com a interface pública no próprio `__init__.py`, e verificar essa fronteira com um teste de arquitetura que roda no CI.
 
