@@ -22,3 +22,8 @@ class Caso:
     @property
     def municipio(self) -> str:
         return str(self.notificacao["municipio_residencia"])
+
+
+class CasoNaoEncontrado(Exception):
+    def __init__(self, id_caso: int):
+        super().__init__(f"caso {id_caso} não encontrado")
