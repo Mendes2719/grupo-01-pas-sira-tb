@@ -14,18 +14,30 @@ from sira.acesso.servico import ServicoDeAcesso
 from sira.acesso.sessoes_jwt import SessoesJwt
 from sira.acesso.sqlite import UsuariosSqlite
 from sira.banco import CAMINHO
+from sira.casos import CasoNaoEncontrado
+from sira.casos import http as casos_http
+from sira.casos.servico import ServicoDeCasos
+from sira.casos.sqlite import CasosSqlite
+from sira.risco import DadosInvalidos
 from sira.risco import http as risco_http
 from sira.risco.preditor_pi import PreditorDoPI
 
-ERROS_HTTP = {CredenciaisInvalidas: 401, SessaoInvalida: 401}
+ERROS_HTTP = {
+    CredenciaisInvalidas: 401,
+    SessaoInvalida: 401,
+    DadosInvalidos: 422,
+    CasoNaoEncontrado: 404,
+}
 
 preditor = PreditorDoPI(Preditor())
 # sem SIRA_CHAVE, cada reinício gera uma chave nova e derruba as sessões abertas
 chave = os.environ.get("SIRA_CHAVE") or secrets.token_hex(32)
 acesso = ServicoDeAcesso(UsuariosSqlite(CAMINHO), SessoesJwt(chave))
+casos = ServicoDeCasos(CasosSqlite(CAMINHO), preditor)
 
 app = FastAPI(title="SIRA-TB", description="Risco de abandono do tratamento de tuberculose")
 app.include_router(acesso_http.criar_rotas(acesso))
+app.include_router(casos_http.criar_rotas(casos, acesso_http.exigir_login(acesso)))
 app.include_router(risco_http.criar_rotas(preditor))
 
 
