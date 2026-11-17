@@ -1,6 +1,6 @@
 # ADR 0005: autenticar com JWT assinado
 
-**Status:** aceito
+**Status:** substituído pelo ADR 0006
 
 **Contexto:** O RF09 pede login, e as rotas de casos só podem ser usadas por quem está autenticado (RNF01). O documento do PI previa um token JWT emitido no login e verificado pela API a cada requisição, e a interface web ainda não foi construída.
 
