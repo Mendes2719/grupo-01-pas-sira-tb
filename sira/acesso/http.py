@@ -24,6 +24,10 @@ def criar_rotas(acesso: ServicoDeAcesso) -> APIRouter:
     def entrar(credenciais: Credenciais) -> dict[str, str]:
         return {"token": acesso.entrar(credenciais.login, credenciais.senha)}
 
+    @rotas.post("/logout", status_code=204)
+    def sair(portador: Portador) -> None:
+        acesso.sair(portador.credentials)
+
     return rotas
 
 
