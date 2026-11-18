@@ -22,3 +22,6 @@ class ServicoDeAcesso:
 
     def usuario_da_sessao(self, token: str) -> str:
         return self._sessoes.dono(token)
+
+    def sair(self, token: str) -> None:
+        self._sessoes.encerrar(token)

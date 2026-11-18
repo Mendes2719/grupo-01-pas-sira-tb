@@ -1,7 +1,5 @@
 """Ponto único de montagem: escolhe os adaptadores e liga os módulos na aplicação (ADR 0002)."""
 
-import os
-import secrets
 from collections.abc import Callable
 
 from fastapi import FastAPI, Request
@@ -11,8 +9,7 @@ from legado.prever import Preditor
 from sira.acesso import CredenciaisInvalidas, SessaoInvalida
 from sira.acesso import http as acesso_http
 from sira.acesso.servico import ServicoDeAcesso
-from sira.acesso.sessoes_jwt import SessoesJwt
-from sira.acesso.sqlite import UsuariosSqlite
+from sira.acesso.sqlite import SessoesSqlite, UsuariosSqlite
 from sira.banco import CAMINHO
 from sira.casos import CasoNaoEncontrado
 from sira.casos import http as casos_http
@@ -30,9 +27,7 @@ ERROS_HTTP = {
 }
 
 preditor = PreditorDoPI(Preditor())
-# sem SIRA_CHAVE, cada reinício gera uma chave nova e derruba as sessões abertas
-chave = os.environ.get("SIRA_CHAVE") or secrets.token_hex(32)
-acesso = ServicoDeAcesso(UsuariosSqlite(CAMINHO), SessoesJwt(chave))
+acesso = ServicoDeAcesso(UsuariosSqlite(CAMINHO), SessoesSqlite(CAMINHO))
 casos = ServicoDeCasos(CasosSqlite(CAMINHO), preditor)
 
 app = FastAPI(title="SIRA-TB", description="Risco de abandono do tratamento de tuberculose")
