@@ -3,7 +3,7 @@
 import json
 import sqlite3
 from dataclasses import asdict, replace
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 from sira.banco import conectar
@@ -47,6 +47,33 @@ class CasosSqlite:
         with conectar(self._banco) as conexao:
             linha = conexao.execute("SELECT * FROM casos WHERE id = ?", (id_caso,)).fetchone()
         return _para_caso(linha) if linha else None
+
+    def listar(
+        self,
+        faixa: FaixaDeRisco | None,
+        desde: date | None,
+        ate: date | None,
+        municipio: str | None,
+    ) -> list[Caso]:
+        condicoes, parametros = [], []
+        if faixa:
+            condicoes.append("faixa = ?")
+            parametros.append(faixa.value)
+        if desde:
+            condicoes.append("data_notificacao >= ?")
+            parametros.append(desde.isoformat())
+        if ate:
+            condicoes.append("data_notificacao <= ?")
+            parametros.append(ate.isoformat())
+        if municipio:
+            condicoes.append("municipio = ?")
+            parametros.append(municipio)
+        onde = f" WHERE {' AND '.join(condicoes)}" if condicoes else ""
+        with conectar(self._banco) as conexao:
+            linhas = conexao.execute(
+                f"SELECT * FROM casos{onde} ORDER BY probabilidade DESC", parametros
+            ).fetchall()
+        return [_para_caso(linha) for linha in linhas]
 
 
 def _para_colunas(caso: Caso) -> tuple:
