@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from sira.casos.dominio import Caso
 from sira.casos.servico import ServicoDeCasos
+from sira.risco import FaixaDeRisco
 
 EXEMPLO = json.loads(
     (Path(__file__).parents[2] / "exemplos" / "paciente_exemplo.json").read_text(encoding="utf-8")
@@ -39,6 +40,15 @@ def criar_rotas(casos: ServicoDeCasos, usuario_logado: Callable[..., str]) -> AP
     def cadastrar(novo: NovoCaso, usuario: Annotated[str, Depends(usuario_logado)]) -> Caso:
         notificacao = novo.notificacao.model_dump(mode="json")
         return casos.cadastrar(novo.identificador, notificacao, usuario)
+
+    @rotas.get("")
+    def listar(
+        faixa: FaixaDeRisco | None = None,
+        desde: date | None = None,
+        ate: date | None = None,
+        municipio: str | None = None,
+    ) -> list[Caso]:
+        return casos.listar_priorizados(faixa, desde, ate, municipio)
 
     @rotas.get("/{id_caso}")
     def detalhar(id_caso: int) -> Caso:
