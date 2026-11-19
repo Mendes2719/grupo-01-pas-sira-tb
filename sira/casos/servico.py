@@ -1,10 +1,10 @@
 """Casos de uso do módulo de casos."""
 
-from datetime import date, datetime
+from datetime import datetime
 
-from sira.casos.dominio import Caso, CasoNaoEncontrado
+from sira.casos.dominio import Caso, CasoNaoEncontrado, FiltroDeCasos
 from sira.casos.portas import RepositorioDeCasos
-from sira.risco import EstimadorDeRisco, FaixaDeRisco
+from sira.risco import EstimadorDeRisco
 
 
 class ServicoDeCasos:
@@ -23,11 +23,5 @@ class ServicoDeCasos:
             raise CasoNaoEncontrado(id_caso)
         return caso
 
-    def listar_priorizados(
-        self,
-        faixa: FaixaDeRisco | None = None,
-        desde: date | None = None,
-        ate: date | None = None,
-        municipio: str | None = None,
-    ) -> list[Caso]:
-        return self._repositorio.listar(faixa, desde, ate, municipio)
+    def listar_priorizados(self, filtro: FiltroDeCasos) -> list[Caso]:
+        return self._repositorio.listar(filtro)

@@ -3,11 +3,11 @@
 import json
 import sqlite3
 from dataclasses import asdict, replace
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
 
 from sira.banco import conectar
-from sira.casos.dominio import Caso
+from sira.casos.dominio import Caso, FiltroDeCasos
 from sira.risco import Estimativa, FaixaDeRisco, Fator
 
 TABELA = """
@@ -48,26 +48,20 @@ class CasosSqlite:
             linha = conexao.execute("SELECT * FROM casos WHERE id = ?", (id_caso,)).fetchone()
         return _para_caso(linha) if linha else None
 
-    def listar(
-        self,
-        faixa: FaixaDeRisco | None,
-        desde: date | None,
-        ate: date | None,
-        municipio: str | None,
-    ) -> list[Caso]:
+    def listar(self, filtro: FiltroDeCasos) -> list[Caso]:
         condicoes, parametros = [], []
-        if faixa:
+        if filtro.faixa:
             condicoes.append("faixa = ?")
-            parametros.append(faixa.value)
-        if desde:
+            parametros.append(filtro.faixa.value)
+        if filtro.desde:
             condicoes.append("data_notificacao >= ?")
-            parametros.append(desde.isoformat())
-        if ate:
+            parametros.append(filtro.desde.isoformat())
+        if filtro.ate:
             condicoes.append("data_notificacao <= ?")
-            parametros.append(ate.isoformat())
-        if municipio:
+            parametros.append(filtro.ate.isoformat())
+        if filtro.municipio:
             condicoes.append("municipio = ?")
-            parametros.append(municipio)
+            parametros.append(filtro.municipio)
         onde = f" WHERE {' AND '.join(condicoes)}" if condicoes else ""
         with conectar(self._banco) as conexao:
             linhas = conexao.execute(
