@@ -3,8 +3,9 @@
 import json
 import sqlite3
 from dataclasses import asdict, replace
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
+from typing import Self
 
 from sira.banco import conectar
 from sira.casos.dominio import Caso, FiltroDeCasos
@@ -31,6 +32,42 @@ INSERT INTO casos (identificador, data_notificacao, municipio, probabilidade, fa
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
 
+class ConsultaDeCasos:
+    """Builder da consulta de casos: cada filtro informado acrescenta uma condição."""
+
+    def __init__(self, selecao: str):
+        self._selecao = selecao
+        self._condicoes: list[str] = []
+        self._parametros: list[str] = []
+        self._ordem = ""
+
+    def com_faixa(self, faixa: FaixaDeRisco | None) -> Self:
+        return self._condicao("faixa = ?", faixa.value if faixa else None)
+
+    def notificados_desde(self, data: date | None) -> Self:
+        return self._condicao("data_notificacao >= ?", data.isoformat() if data else None)
+
+    def notificados_ate(self, data: date | None) -> Self:
+        return self._condicao("data_notificacao <= ?", data.isoformat() if data else None)
+
+    def do_municipio(self, municipio: str | None) -> Self:
+        return self._condicao("municipio = ?", municipio)
+
+    def ordenada_por(self, ordem: str) -> Self:
+        self._ordem = f" ORDER BY {ordem}"
+        return self
+
+    def montar(self) -> tuple[str, list[str]]:
+        onde = f" WHERE {' AND '.join(self._condicoes)}" if self._condicoes else ""
+        return f"{self._selecao}{onde}{self._ordem}", self._parametros
+
+    def _condicao(self, condicao: str, valor: str | None) -> Self:
+        if valor:
+            self._condicoes.append(condicao)
+            self._parametros.append(valor)
+        return self
+
+
 class CasosSqlite:
     def __init__(self, banco: Path):
         self._banco = banco
@@ -49,25 +86,20 @@ class CasosSqlite:
         return _para_caso(linha) if linha else None
 
     def listar(self, filtro: FiltroDeCasos) -> list[Caso]:
-        condicoes, parametros = [], []
-        if filtro.faixa:
-            condicoes.append("faixa = ?")
-            parametros.append(filtro.faixa.value)
-        if filtro.desde:
-            condicoes.append("data_notificacao >= ?")
-            parametros.append(filtro.desde.isoformat())
-        if filtro.ate:
-            condicoes.append("data_notificacao <= ?")
-            parametros.append(filtro.ate.isoformat())
-        if filtro.municipio:
-            condicoes.append("municipio = ?")
-            parametros.append(filtro.municipio)
-        onde = f" WHERE {' AND '.join(condicoes)}" if condicoes else ""
+        consulta = _filtrada("SELECT * FROM casos", filtro).ordenada_por("probabilidade DESC")
         with conectar(self._banco) as conexao:
-            linhas = conexao.execute(
-                f"SELECT * FROM casos{onde} ORDER BY probabilidade DESC", parametros
-            ).fetchall()
+            linhas = conexao.execute(*consulta.montar()).fetchall()
         return [_para_caso(linha) for linha in linhas]
+
+
+def _filtrada(selecao: str, filtro: FiltroDeCasos) -> ConsultaDeCasos:
+    return (
+        ConsultaDeCasos(selecao)
+        .com_faixa(filtro.faixa)
+        .notificados_desde(filtro.desde)
+        .notificados_ate(filtro.ate)
+        .do_municipio(filtro.municipio)
+    )
 
 
 def _para_colunas(caso: Caso) -> tuple:
