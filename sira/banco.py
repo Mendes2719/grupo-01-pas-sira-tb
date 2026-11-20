@@ -1,11 +1,12 @@
 """Conexão com o arquivo SQLite; cada módulo cria e consulta só as próprias tabelas (ADR 0004)."""
 
+import os
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
-CAMINHO = Path("sira.db")
+CAMINHO = Path(os.environ.get("SIRA_BANCO", "sira.db"))
 
 
 @contextmanager
