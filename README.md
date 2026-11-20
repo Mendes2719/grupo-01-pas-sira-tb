@@ -33,3 +33,5 @@ Com o sistema no ar, abra http://localhost:8000/docs e:
 2. clique em **Authorize** e cole o token;
 3. em `POST /casos`, o exemplo de notificação já vem preenchido, é só executar;
 4. em `GET /casos/{id_caso}`, consulte o caso pelo `id` devolvido no cadastro.
+
+O banco fica no arquivo `sira.db`, na pasta em que o sistema roda. Para usar outro arquivo, defina a variável `SIRA_BANCO` antes de subir, inclusive ao criar o usuário. `GET /saude` informa se o banco responde e qual versão do modelo foi carregada, e cada requisição gera no terminal uma linha de log em JSON com o id que também volta no cabeçalho `x-request-id`.
