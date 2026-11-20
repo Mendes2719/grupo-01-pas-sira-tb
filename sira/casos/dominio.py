@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from datetime import date, datetime
 
-from sira.risco import Estimativa
+from sira.risco import Estimativa, FaixaDeRisco
 
 
 @dataclass(frozen=True)
@@ -22,6 +22,16 @@ class Caso:
     @property
     def municipio(self) -> str:
         return str(self.notificacao["municipio_residencia"])
+
+
+@dataclass(frozen=True)
+class FiltroDeCasos:
+    """Recorte da lista priorizada; campo vazio não filtra."""
+
+    faixa: FaixaDeRisco | None = None
+    desde: date | None = None
+    ate: date | None = None
+    municipio: str | None = None
 
 
 class CasoNaoEncontrado(Exception):

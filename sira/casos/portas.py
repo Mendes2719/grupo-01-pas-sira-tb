@@ -1,10 +1,8 @@
 """Portas do módulo de casos."""
 
-from datetime import date
 from typing import Protocol
 
-from sira.casos.dominio import Caso
-from sira.risco import FaixaDeRisco
+from sira.casos.dominio import Caso, FiltroDeCasos
 
 
 class RepositorioDeCasos(Protocol):
@@ -12,10 +10,4 @@ class RepositorioDeCasos(Protocol):
 
     def buscar(self, id_caso: int) -> Caso | None: ...
 
-    def listar(
-        self,
-        faixa: FaixaDeRisco | None,
-        desde: date | None,
-        ate: date | None,
-        municipio: str | None,
-    ) -> list[Caso]: ...
+    def listar(self, filtro: FiltroDeCasos) -> list[Caso]: ...

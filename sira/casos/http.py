@@ -9,9 +9,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
 
-from sira.casos.dominio import Caso
+from sira.casos.dominio import Caso, FiltroDeCasos
 from sira.casos.servico import ServicoDeCasos
-from sira.risco import FaixaDeRisco
 
 EXEMPLO = json.loads(
     (Path(__file__).parents[2] / "exemplos" / "paciente_exemplo.json").read_text(encoding="utf-8")
@@ -42,13 +41,8 @@ def criar_rotas(casos: ServicoDeCasos, usuario_logado: Callable[..., str]) -> AP
         return casos.cadastrar(novo.identificador, notificacao, usuario)
 
     @rotas.get("")
-    def listar(
-        faixa: FaixaDeRisco | None = None,
-        desde: date | None = None,
-        ate: date | None = None,
-        municipio: str | None = None,
-    ) -> list[Caso]:
-        return casos.listar_priorizados(faixa, desde, ate, municipio)
+    def listar(filtro: Annotated[FiltroDeCasos, Depends()]) -> list[Caso]:
+        return casos.listar_priorizados(filtro)
 
     @rotas.get("/{id_caso}")
     def detalhar(id_caso: int) -> Caso:
