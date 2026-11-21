@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from sira.casos.dominio import Caso, CasoNaoEncontrado, FiltroDeCasos
+from sira.casos.dominio import Caso, CasoNaoEncontrado, FiltroDeCasos, Indicadores
 from sira.casos.portas import RepositorioDeCasos
 from sira.risco import EstimadorDeRisco
 
@@ -25,3 +25,6 @@ class ServicoDeCasos:
 
     def listar_priorizados(self, filtro: FiltroDeCasos) -> list[Caso]:
         return self._repositorio.listar(filtro)
+
+    def indicadores(self, filtro: FiltroDeCasos) -> Indicadores:
+        return self._repositorio.indicadores(filtro)

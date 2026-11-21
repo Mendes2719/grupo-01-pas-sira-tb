@@ -9,7 +9,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
 
-from sira.casos.dominio import Caso, FiltroDeCasos
+from sira.casos.dominio import Caso, FiltroDeCasos, Indicadores
 from sira.casos.servico import ServicoDeCasos
 
 EXEMPLO = json.loads(
@@ -43,6 +43,11 @@ def criar_rotas(casos: ServicoDeCasos, usuario_logado: Callable[..., str]) -> AP
     @rotas.get("")
     def listar(filtro: Annotated[FiltroDeCasos, Depends()]) -> list[Caso]:
         return casos.listar_priorizados(filtro)
+
+    # declarada antes de /{id_caso}, senão "indicadores" seria lido como o id de um caso
+    @rotas.get("/indicadores")
+    def indicadores(filtro: Annotated[FiltroDeCasos, Depends()]) -> Indicadores:
+        return casos.indicadores(filtro)
 
     @rotas.get("/{id_caso}")
     def detalhar(id_caso: int) -> Caso:
