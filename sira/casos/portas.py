@@ -2,7 +2,7 @@
 
 from typing import Protocol
 
-from sira.casos.dominio import Caso, FiltroDeCasos
+from sira.casos.dominio import Caso, FiltroDeCasos, Indicadores
 
 
 class RepositorioDeCasos(Protocol):
@@ -11,3 +11,5 @@ class RepositorioDeCasos(Protocol):
     def buscar(self, id_caso: int) -> Caso | None: ...
 
     def listar(self, filtro: FiltroDeCasos) -> list[Caso]: ...
+
+    def indicadores(self, filtro: FiltroDeCasos) -> Indicadores: ...

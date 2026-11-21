@@ -39,3 +39,17 @@ def test_filtros_combinados(repositorio, novo_caso):
     filtro = FiltroDeCasos(FaixaDeRisco.MUITO_ALTO, date(2026, 9, 1), date(2026, 9, 30), "350950")
     lista = repositorio.listar(filtro)
     assert [caso.estimativa.probabilidade for caso in lista] == [0.6]
+
+
+def test_indicadores_conferem_com_a_lista_filtrada(repositorio, novo_caso):
+    repositorio.adicionar(novo_caso(0.6, FaixaDeRisco.MUITO_ALTO))
+    repositorio.adicionar(novo_caso(0.3, FaixaDeRisco.ALTO))
+    repositorio.adicionar(novo_caso(0.06, FaixaDeRisco.BAIXO))
+    repositorio.adicionar(novo_caso(0.9, FaixaDeRisco.MUITO_ALTO, municipio="355030"))
+    filtro = FiltroDeCasos(municipio="350950")
+    lista = repositorio.listar(filtro)
+    indicadores = repositorio.indicadores(filtro)
+    assert indicadores.total == len(lista) == 3
+    assert indicadores.alto_ou_muito_alto == 2
+    assert indicadores.probabilidade_media == 0.32
+    assert indicadores.por_faixa[FaixaDeRisco.MODERADO] == 0
