@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Self
 
 from sira.banco import conectar
-from sira.casos.dominio import Caso, FiltroDeCasos
+from sira.casos.dominio import Caso, FiltroDeCasos, Indicadores
 from sira.risco import Estimativa, FaixaDeRisco, Fator
 
 TABELA = """
@@ -39,6 +39,7 @@ class ConsultaDeCasos:
         self._selecao = selecao
         self._condicoes: list[str] = []
         self._parametros: list[str] = []
+        self._agrupamento = ""
         self._ordem = ""
 
     def com_faixa(self, faixa: FaixaDeRisco | None) -> Self:
@@ -53,13 +54,17 @@ class ConsultaDeCasos:
     def do_municipio(self, municipio: str | None) -> Self:
         return self._condicao("municipio = ?", municipio)
 
+    def agrupada_por(self, coluna: str) -> Self:
+        self._agrupamento = f" GROUP BY {coluna}"
+        return self
+
     def ordenada_por(self, ordem: str) -> Self:
         self._ordem = f" ORDER BY {ordem}"
         return self
 
     def montar(self) -> tuple[str, list[str]]:
         onde = f" WHERE {' AND '.join(self._condicoes)}" if self._condicoes else ""
-        return f"{self._selecao}{onde}{self._ordem}", self._parametros
+        return f"{self._selecao}{onde}{self._agrupamento}{self._ordem}", self._parametros
 
     def _condicao(self, condicao: str, valor: str | None) -> Self:
         if valor:
@@ -90,6 +95,14 @@ class CasosSqlite:
         with conectar(self._banco) as conexao:
             linhas = conexao.execute(*consulta.montar()).fetchall()
         return [_para_caso(linha) for linha in linhas]
+
+    def indicadores(self, filtro: FiltroDeCasos) -> Indicadores:
+        selecao = "SELECT faixa, COUNT(*) AS casos, SUM(probabilidade) AS soma FROM casos"
+        consulta = _filtrada(selecao, filtro).agrupada_por("faixa")
+        with conectar(self._banco) as conexao:
+            linhas = conexao.execute(*consulta.montar()).fetchall()
+        casos_por_faixa = {FaixaDeRisco(linha["faixa"]): linha["casos"] for linha in linhas}
+        return Indicadores.das_faixas(casos_por_faixa, sum(linha["soma"] for linha in linhas))
 
 
 def _filtrada(selecao: str, filtro: FiltroDeCasos) -> ConsultaDeCasos:
