@@ -19,6 +19,7 @@ from sira.casos.sqlite import CasosSqlite
 from sira.observabilidade import configurar_logs, medir_requisicoes
 from sira.risco import DadosInvalidos
 from sira.risco import http as risco_http
+from sira.risco.cronometro import EstimadorCronometrado
 from sira.risco.preditor_pi import PreditorDoPI
 
 ERROS_HTTP = {
@@ -31,7 +32,7 @@ ERROS_HTTP = {
 configurar_logs()
 preditor = PreditorDoPI(Preditor())
 acesso = ServicoDeAcesso(UsuariosSqlite(CAMINHO), SessoesSqlite(CAMINHO))
-casos = ServicoDeCasos(CasosSqlite(CAMINHO), preditor)
+casos = ServicoDeCasos(CasosSqlite(CAMINHO), EstimadorCronometrado(preditor))
 
 app = FastAPI(title="SIRA-TB", description="Risco de abandono do tratamento de tuberculose")
 medir_requisicoes(app)

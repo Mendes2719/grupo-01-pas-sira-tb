@@ -3,6 +3,7 @@
 import pytest
 
 from sira.risco import DadosInvalidos, FaixaDeRisco
+from sira.risco.cronometro import EstimadorCronometrado
 from sira.risco.preditor_pi import PreditorDoPI
 
 
@@ -22,3 +23,10 @@ def test_traduz_a_resposta_para_o_dominio(adaptador, preditor, exemplo):
 def test_erro_do_legado_vira_dados_invalidos(adaptador, exemplo):
     with pytest.raises(DadosInvalidos, match="sexo"):
         adaptador.estimar({**exemplo, "sexo": "Outro"})
+
+
+def test_cronometro_devolve_a_mesma_estimativa_e_repassa_o_erro(adaptador, exemplo):
+    cronometrado = EstimadorCronometrado(adaptador)
+    assert cronometrado.estimar(exemplo) == adaptador.estimar(exemplo)
+    with pytest.raises(DadosInvalidos):
+        cronometrado.estimar({**exemplo, "sexo": "Outro"})
