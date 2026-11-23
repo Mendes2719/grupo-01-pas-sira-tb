@@ -1,0 +1,16 @@
+C4Container
+    title Nível 2 (contêineres) do SIRA-TB
+    Person(profissional, "Profissional de saúde", "Notifica o caso e decide quem recebe TDO")
+    System_Ext(pipeline, "Pipeline de dados do PI", "Trata os microdados do SINAN e treina o modelo")
+    System_Boundary(sira, "SIRA-TB") {
+        Container(web, "Aplicação web", "React e TypeScript, prevista no PI", "Telas de login, cadastro, lista e detalhe")
+        Container(api, "API do SIRA-TB", "Python, FastAPI e Uvicorn", "Monolito modular com os módulos acesso, casos e risco")
+        ContainerDb(banco, "Banco", "SQLite", "Usuários, sessões e casos com a estimativa congelada")
+        ContainerDb(modelo, "Modelo", "XGBoost em JSON", "modelo.json e metadados.json")
+    }
+    Rel(profissional, web, "chamada: usa", "HTTPS")
+    Rel(web, api, "chamada: login, cadastro, lista e indicadores", "HTTPS e JSON")
+    Rel(api, banco, "arquivo: lê e grava", "sqlite3")
+    Rel(api, modelo, "arquivo: carrega na subida", "JSON")
+    Rel(pipeline, modelo, "arquivo: gera a cada retreino", "JSON")
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")

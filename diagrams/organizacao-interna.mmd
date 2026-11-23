@@ -1,0 +1,24 @@
+flowchart LR
+    subgraph entrada["Adaptadores primários"]
+        http["http.py de cada módulo (FastAPI)"]
+        cli["acesso/criar_usuario.py (linha de comando)"]
+    end
+    subgraph nucleo["Núcleo do módulo"]
+        servico["servico.py (casos de uso)"]
+        dominio["dominio.py (entidades e regras)"]
+        portas["portas.py (Protocol)"]
+    end
+    subgraph saida["Adaptadores secundários"]
+        sqlite["sqlite.py (SQLite)"]
+        preditor["risco/preditor_pi.py e risco/cronometro.py"]
+    end
+    montagem["sira/app.py (montagem)"]
+    http -->|"chamada"| servico
+    cli -->|"chamada"| servico
+    servico -->|"chamada"| dominio
+    servico -->|"depende de"| portas
+    sqlite -.->|"implementa"| portas
+    preditor -.->|"implementa"| portas
+    montagem -.->|"cria e injeta"| http
+    montagem -.->|"cria e injeta"| sqlite
+    montagem -.->|"cria e injeta"| preditor
