@@ -1,0 +1,22 @@
+flowchart TB
+    web["Aplicação web ou /docs"]
+    subgraph api["API do SIRA-TB (unidade de implantação)"]
+        obs["observabilidade: log JSON e id da requisição"]
+        acesso["acesso: login, logout e sessões"]
+        casos["casos: cadastro, lista, detalhe e indicadores"]
+        risco["risco: PreditorDoPI e EstimadorCronometrado"]
+        legado["legado/prever.py: Preditor do PI"]
+    end
+    banco[("SQLite")]
+    modelo[("modelo/")]
+    web -->|"chamada HTTP"| obs
+    obs -->|"chamada"| acesso
+    obs -->|"chamada"| casos
+    obs -->|"chamada: GET /campos"| risco
+    casos -->|"chamada: exigir_login"| acesso
+    casos -->|"chamada: porta EstimadorDeRisco"| risco
+    risco -->|"chamada"| legado
+    legado -->|"arquivo"| modelo
+    acesso -->|"arquivo"| banco
+    casos -->|"arquivo"| banco
+    style api fill:#ffffff,stroke:#444444,stroke-dasharray: 6 4

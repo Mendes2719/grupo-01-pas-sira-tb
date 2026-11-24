@@ -1,0 +1,31 @@
+sequenceDiagram
+    actor P as Profissional
+    participant O as observabilidade
+    participant H as casos/http.py
+    participant A as ServicoDeAcesso
+    participant S as ServicoDeCasos
+    participant C as EstimadorCronometrado
+    participant D as PreditorDoPI
+    participant L as Preditor (legado)
+    participant R as CasosSqlite
+    P->>O: POST /casos com token e ficha
+    O->>H: repassa com o id da requisição
+    H->>A: usuario_da_sessao(token)
+    A-->>H: login
+    H->>S: cadastrar(identificador, ficha, login)
+    S->>C: estimar(ficha)
+    C->>D: estimar(ficha)
+    D->>L: prever(ficha)
+    alt ficha válida
+        L-->>D: dicionário do PI
+        D-->>C: Estimativa
+        C-->>S: Estimativa, e o log "estimativa" com duracao_ms
+        S->>R: adicionar(caso)
+        R-->>S: caso com id
+        S-->>H: Caso
+        H-->>O: 201 com o caso
+    else campo obrigatório ausente ou valor fora das opções
+        L-->>D: ValueError
+        D-->>H: DadosInvalidos, convertido em 422 pelo app.py
+    end
+    O-->>P: resposta, e o log "requisicao" com o mesmo id

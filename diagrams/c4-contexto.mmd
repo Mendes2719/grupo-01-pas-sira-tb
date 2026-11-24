@@ -1,0 +1,8 @@
+C4Context
+    title Nível 1 (contexto) do SIRA-TB
+    Person(profissional, "Profissional de saúde", "Notifica o caso e decide quem recebe TDO")
+    System(sira, "SIRA-TB", "Estima o risco de abandono e ordena os pacientes por risco")
+    System_Ext(pipeline, "Pipeline de dados do PI", "Trata os microdados do SINAN e treina o modelo")
+    Rel(profissional, sira, "chamada: cadastra casos e consulta a lista", "HTTPS")
+    Rel(pipeline, sira, "arquivo: entrega modelo.json e metadados.json", "JSON")
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
