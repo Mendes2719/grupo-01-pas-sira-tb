@@ -1,0 +1,20 @@
+classDiagram
+    class EstimadorDeRisco {
+        <<Protocol>>
+        +estimar(notificacao) Estimativa
+    }
+    class PreditorDoPI {
+        +estimar(notificacao) Estimativa
+    }
+    class EstimadorCronometrado {
+        -_estimador: EstimadorDeRisco
+        -_limite_ms: float
+        +estimar(notificacao) Estimativa
+    }
+    class ServicoDeCasos {
+        +cadastrar(identificador, notificacao, usuario) Caso
+    }
+    EstimadorDeRisco <|.. PreditorDoPI
+    EstimadorDeRisco <|.. EstimadorCronometrado
+    EstimadorCronometrado o-- EstimadorDeRisco : envolve
+    ServicoDeCasos --> EstimadorDeRisco

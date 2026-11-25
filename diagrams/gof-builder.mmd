@@ -1,0 +1,24 @@
+classDiagram
+    class ConsultaDeCasos {
+        -_condicoes: list
+        -_parametros: list
+        +com_faixa(faixa) ConsultaDeCasos
+        +notificados_desde(data) ConsultaDeCasos
+        +notificados_ate(data) ConsultaDeCasos
+        +do_municipio(municipio) ConsultaDeCasos
+        +agrupada_por(coluna) ConsultaDeCasos
+        +ordenada_por(ordem) ConsultaDeCasos
+        +montar() tuple
+    }
+    class CasosSqlite {
+        +listar(filtro) list
+        +indicadores(filtro) Indicadores
+    }
+    class FiltroDeCasos {
+        +faixa
+        +desde
+        +ate
+        +municipio
+    }
+    CasosSqlite ..> ConsultaDeCasos : _filtrada monta os passos
+    CasosSqlite ..> FiltroDeCasos : recebe
