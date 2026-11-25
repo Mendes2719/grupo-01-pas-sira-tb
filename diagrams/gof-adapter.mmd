@@ -1,0 +1,23 @@
+classDiagram
+    class EstimadorDeRisco {
+        <<Protocol>>
+        +estimar(notificacao) Estimativa
+    }
+    class PreditorDoPI {
+        -_preditor: Preditor
+        +versao: str
+        +campos() dict
+        +estimar(notificacao) Estimativa
+    }
+    class Preditor {
+        +campos: dict
+        +meta: dict
+        +prever(dados) dict
+        +prever_lote(lista) list
+    }
+    class ServicoDeCasos {
+        +cadastrar(identificador, notificacao, usuario) Caso
+    }
+    EstimadorDeRisco <|.. PreditorDoPI
+    PreditorDoPI o-- Preditor : adapta
+    ServicoDeCasos --> EstimadorDeRisco
