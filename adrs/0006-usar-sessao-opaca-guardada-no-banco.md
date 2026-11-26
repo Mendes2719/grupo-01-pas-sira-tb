@@ -13,3 +13,5 @@
 **Consequências:**
 - Positivas: o logout vale na hora; não há chave de assinatura para configurar; a troca do tipo de token mexeu só no adaptador de sessões e em `sira/app.py`, sem mudar `entrar` nem `usuario_da_sessao` no serviço.
 - Negativas: uma consulta ao banco a mais em cada requisição protegida; sessões vencidas continuam na tabela até alguém apagá-las.
+
+**Implementado em:** [PR #9](https://github.com/Mendes2719/grupo-01-pas-sira-tb/pull/9)

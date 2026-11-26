@@ -13,3 +13,5 @@
 **Consequências:**
 - Positivas: um artefato e um comando para subir o sistema; um módulo novo entra sem mexer nos outros; o teste de arquitetura acusa a importação proibida antes do merge.
 - Negativas: os três módulos dividem o mesmo processo, então um erro ao carregar o modelo também derruba o login; manter a fronteira exige revisão e cuidado com o teste.
+
+**Implementado em:** [PR #2](https://github.com/Mendes2719/grupo-01-pas-sira-tb/pull/2)

@@ -13,3 +13,5 @@
 **Consequências:**
 - Positivas: nada para instalar além do Python; a lista lê o risco já calculado e ordena pelo índice de probabilidade, sem rodar o modelo.
 - Negativas: o SQLite aceita uma escrita por vez, o que limita o uso simultâneo; os fatores ficam em JSON e não podem ser filtrados por SQL; a migração para PostgreSQL vai exigir mover os dados.
+
+**Implementado em:** [PR #6](https://github.com/Mendes2719/grupo-01-pas-sira-tb/pull/6)

@@ -13,3 +13,5 @@
 **Consequências:**
 - Positivas: os serviços são testados com SQLite temporário e estimador falso, sem XGBoost; trocar uma tecnologia é trocar um adaptador e uma linha em `sira/app.py`.
 - Negativas: mais arquivos por módulo, e o mapeamento entre o domínio e as tabelas é escrito à mão em cada adaptador.
+
+**Implementado em:** [PR #2](https://github.com/Mendes2719/grupo-01-pas-sira-tb/pull/2)
