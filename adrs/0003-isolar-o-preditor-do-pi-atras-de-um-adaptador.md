@@ -13,3 +13,5 @@
 **Consequências:**
 - Positivas: a estimativa continua idêntica à validada no PI, o que o teste de caracterização confere; o resto do sistema não conhece XGBoost, pandas nem o formato do PI.
 - Negativas: o legado continua com uma classe grande e métodos longos, só que isolado; toda mudança no formato de resposta do PI exige atualizar o adaptador.
+
+**Implementado em:** [PR #5](https://github.com/Mendes2719/grupo-01-pas-sira-tb/pull/5)

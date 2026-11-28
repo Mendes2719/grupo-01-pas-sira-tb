@@ -13,3 +13,5 @@
 **Consequências:**
 - Positivas: um comando sobe o sistema inteiro; a predição acontece em memória, sem rede; `GET /saude` diz se o banco responde e qual versão do modelo está carregada.
 - Negativas: retreinar o modelo exige reiniciar o processo; com SQLite em arquivo não dá para subir uma segunda instância atrás de um balanceador; uma queda do processo tira tudo do ar.
+
+**Implementado em:** [PR #12](https://github.com/Mendes2719/grupo-01-pas-sira-tb/pull/12)

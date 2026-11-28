@@ -13,3 +13,5 @@
 **Consequências:**
 - Positivas: a validação não consulta o banco; o token já traz o login de quem está cadastrando o caso.
 - Negativas: o token não pode ser revogado antes de expirar; a chave de assinatura precisa ser configurada em `SIRA_CHAVE` e protegida.
+
+**Implementado em:** [PR #7](https://github.com/Mendes2719/grupo-01-pas-sira-tb/pull/7)
